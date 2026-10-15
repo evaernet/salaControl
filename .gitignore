@@ -1,0 +1,22 @@
+# Dependencias (se instalan con composer install / npm install)
+backend/vendor/
+mobile/node_modules/
+
+# Datos privados: contraseñas y claves
+.env
+*.env.local
+
+# Archivos que genera cada máquina
+backend/storage/logs/*.log
+backend/database/*.sqlite
+mobile/.expo/
+mobile/dist/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Instrucciones para asistentes de IA
+CLAUDE.md
+AGENTS.md
+.claude/
