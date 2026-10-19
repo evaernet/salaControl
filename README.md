@@ -92,6 +92,13 @@ Todas las respuestas son JSON. Las rutas protegidas llevan el header `Authorizat
 | GET | `/api/users/{id}` | administrador | `200` usuario · `404` |
 | PUT | `/api/users/{id}` | administrador | `200` usuario actualizado · `422` validación |
 | DELETE | `/api/users/{id}` | administrador | `204` baja lógica |
+| GET | `/api/salas` | con sesión | `200` salas con la cantidad de camas |
+| GET | `/api/salas/{id}` | con sesión | `200` sala con sus camas |
+| POST | `/api/salas` | administrador | `201` sala creada (`nombre`, y `camas` opcional para crearlas numeradas) |
+| DELETE | `/api/salas/{id}` | administrador | `204` borra la sala y sus camas |
+| POST | `/api/salas/{id}/camas` | administrador | `201` agrega una cama con el número siguiente |
+| PUT | `/api/camas/{id}` | administrador | `200` cambia el `estado`: `libre`, `limpieza` o `fuera_de_servicio` |
+| DELETE | `/api/camas/{id}` | administrador | `204` quita la cama |
 
 Un médico o enfermero recibe **403** en todas las rutas de `/api/users`: lo controla el middleware
 `role:administrador` en el servidor, no la app.
