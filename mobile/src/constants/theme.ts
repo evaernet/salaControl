@@ -12,6 +12,7 @@ export const colors = {
   muted: '#6B7C8F',
   border: '#C9D6E3',
   line: '#E1E9F1',
+  success: '#2E9E6B',
   danger: '#D14343',
   dangerSoft: '#FBE9E9',
   white: '#FFFFFF',
