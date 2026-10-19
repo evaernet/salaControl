@@ -47,6 +47,12 @@ export default function AdminHomeScreen() {
         description="Alta de médicos, enfermeros y administradores"
         onPress={() => router.push('/admin/users/create')}
       />
+      <ActionCard
+        icon="bed-outline"
+        title="Salas y camas"
+        description="Crear salas y manejar sus camas"
+        onPress={() => router.push('/admin/salas')}
+      />
 
       <LogoutButton />
     </Screen>
