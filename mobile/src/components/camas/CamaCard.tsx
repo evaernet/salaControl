@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -17,6 +18,7 @@ interface CamaCardProps {
 }
 
 export function CamaCard({ cama, sala, onCambio }: CamaCardProps) {
+  const router = useRouter();
   const paciente = cama.paciente;
 
   if (!paciente) {
@@ -26,7 +28,11 @@ export function CamaCard({ cama, sala, onCambio }: CamaCardProps) {
   const aislamiento = AISLAMIENTOS[paciente.aislamiento];
 
   return (
-    <View style={styles.card}>
+    <Pressable
+      onPress={() => router.push({ pathname: '/sala/paciente/[id]', params: { id: paciente.id } })}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
       <View style={[styles.numero, { backgroundColor: colors.brand }]}>
         <Text style={[styles.numeroTexto, { color: colors.white }]}>{cama.numero}</Text>
       </View>
@@ -44,7 +50,8 @@ export function CamaCard({ cama, sala, onCambio }: CamaCardProps) {
           <Text style={styles.dia}>Día {diaDeInternacion(paciente.fecha_ingreso)}</Text>
         </View>
       </View>
-    </View>
+      <Ionicons name="chevron-forward" size={20} color={colors.brand} />
+    </Pressable>
   );
 }
 
@@ -107,6 +114,9 @@ const styles = StyleSheet.create({
     borderRadius: radius,
     padding: 12,
     ...shadow,
+  },
+  pressed: {
+    backgroundColor: colors.brandSoft,
   },
   cardVacia: {
     paddingVertical: 10,
