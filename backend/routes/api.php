@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CamaController;
+use App\Http\Controllers\Api\ControlController;
 use App\Http\Controllers\Api\PacienteController;
 use App\Http\Controllers\Api\SalaController;
 use App\Http\Controllers\Api\UserController;
@@ -21,6 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Cualquier rol puede cambiar el estado de una cama de su sala.
     Route::put('/camas/{cama}', [CamaController::class, 'update']);
+
+    // Controles: los registran médico y enfermero.
+    Route::post('/pacientes/{paciente}/controles', [ControlController::class, 'store'])->middleware('role:medico,enfermero');
 
     // Internar, editar, cambiar de cama y dar el alta: solo el médico.
     Route::middleware('role:medico')->group(function () {

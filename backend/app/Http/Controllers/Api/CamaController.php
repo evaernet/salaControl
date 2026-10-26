@@ -24,9 +24,7 @@ class CamaController extends Controller
     // Lo puede hacer cualquier rol (enfermería suele avisar que la cama ya se limpió).
     public function update(Request $request, Cama $cama)
     {
-        if (! $request->user()->puedeVerSala($cama->sala)) {
-            abort(403, 'No tenés acceso a esta sala.');
-        }
+        $this->verificarAcceso($request, $cama);
 
         if ($cama->estaOcupada()) {
             abort(422, 'La cama tiene un paciente internado.');

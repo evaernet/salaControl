@@ -27,6 +27,17 @@ class Paciente extends Model
         return $this->belongsTo(Cama::class);
     }
 
+    // Del más nuevo al más viejo.
+    public function controles()
+    {
+        return $this->hasMany(Control::class)->orderByDesc('fecha');
+    }
+
+    public function ultimoControl()
+    {
+        return $this->hasOne(Control::class)->latestOfMany('fecha');
+    }
+
     public function estaInternado(): bool
     {
         return $this->fecha_alta === null;

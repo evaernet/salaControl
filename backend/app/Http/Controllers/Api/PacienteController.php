@@ -11,10 +11,13 @@ use Illuminate\Validation\Rule;
 
 class PacienteController extends Controller
 {
-    // Ficha del paciente con su cama y sala.
+    // Ficha del paciente con su cama, sala y los últimos controles.
     public function show(Request $request, Paciente $paciente)
     {
-        $paciente->load('cama.sala');
+        $paciente->load([
+            'cama.sala',
+            'controles' => fn ($query) => $query->limit(20)->with('user:id,nombre,apellido'),
+        ]);
 
         if ($paciente->cama) {
             $this->verificarAcceso($request, $paciente->cama);
@@ -46,8 +49,7 @@ class PacienteController extends Controller
     // Corrige los datos del paciente (la cama se cambia aparte).
     public function update(Request $request, Paciente $paciente)
     {
-        $this->verificarInternado($paciente);
-        $this->verificarAcceso($request, $paciente->cama);
+        $this->verificarInternado($request, $paciente);
 
         $paciente->update($request->validate($this->reglas(), $this->mensajes()));
 
@@ -62,8 +64,7 @@ class PacienteController extends Controller
             ['cama_id.required' => 'Elegí la cama nueva.'],
         );
 
-        $this->verificarInternado($paciente);
-        $this->verificarAcceso($request, $paciente->cama);
+        $this->verificarInternado($request, $paciente);
 
         $nueva = Cama::findOrFail($datos['cama_id']);
         $this->verificarAcceso($request, $nueva);
@@ -83,8 +84,7 @@ class PacienteController extends Controller
     // Da el alta. La cama queda en limpieza y el paciente pasa al historial.
     public function alta(Request $request, Paciente $paciente)
     {
-        $this->verificarInternado($paciente);
-        $this->verificarAcceso($request, $paciente->cama);
+        $this->verificarInternado($request, $paciente);
 
         DB::transaction(function () use ($paciente) {
             $paciente->update(['fecha_alta' => now()]);
@@ -128,19 +128,5 @@ class PacienteController extends Controller
             'aislamiento.in' => 'El tipo de aislamiento no es válido.',
             'max' => 'El texto es demasiado largo.',
         ];
-    }
-
-    private function verificarAcceso(Request $request, Cama $cama): void
-    {
-        if (! $request->user()->puedeVerSala($cama->sala)) {
-            abort(403, 'No tenés acceso a esta sala.');
-        }
-    }
-
-    private function verificarInternado(Paciente $paciente): void
-    {
-        if (! $paciente->estaInternado() || ! $paciente->cama) {
-            abort(422, 'El paciente ya fue dado de alta.');
-        }
     }
 }
