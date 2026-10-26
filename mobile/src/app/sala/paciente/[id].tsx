@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { parseApiError } from '@/api/errors';
 import { useAuth } from '@/auth/AuthContext';
 import { Alertas } from '@/components/pacientes/Alertas';
+import { MedicacionLista } from '@/components/pacientes/MedicacionLista';
 import { Temperatura } from '@/components/pacientes/Temperatura';
 import { Button } from '@/components/ui/Button';
 import { ErrorBanner } from '@/components/ui/ErrorBanner';
@@ -138,6 +139,14 @@ export default function PacienteScreen() {
         pacienteId={actual.id}
         controles={actual.controles ?? []}
         puedeRegistrar={!!internado}
+        onCambio={cargar}
+      />
+
+      <MedicacionLista
+        pacienteId={actual.id}
+        medicaciones={actual.medicaciones ?? []}
+        esMedico={esMedico}
+        internado={!!internado}
         onCambio={cargar}
       />
 
