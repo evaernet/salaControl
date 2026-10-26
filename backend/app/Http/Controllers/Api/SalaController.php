@@ -12,7 +12,7 @@ class SalaController extends Controller
     // Médico y enfermero con sala asignada reciben solo la suya.
     public function index(Request $request)
     {
-        $salas = Sala::with(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente')])
+        $salas = Sala::with(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente.ultimoControl', 'paciente.medicaciones')])
             ->withCount('camas')
             ->orderBy('nombre')
             ->get();
@@ -26,7 +26,7 @@ class SalaController extends Controller
             abort(403, 'No tenés acceso a esta sala.');
         }
 
-        return $sala->load(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente')]);
+        return $sala->load(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente.ultimoControl', 'paciente.medicaciones')]);
     }
 
     // Crea la sala y, si se indica, sus camas numeradas del 1 en adelante.

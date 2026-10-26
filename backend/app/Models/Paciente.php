@@ -13,6 +13,9 @@ class Paciente extends Model
         'aislamiento', 'alergias', 'obra_social', 'acompanante_parentesco', 'acompanante', 'acompanante_telefono', 'fecha_ingreso', 'fecha_alta',
     ];
 
+    // Las alertas viajan siempre con el paciente.
+    protected $appends = ['alertas'];
+
     protected $casts = [
         'cama_id' => 'integer',
         'fecha_nacimiento' => 'date:Y-m-d',
@@ -47,5 +50,44 @@ class Paciente extends Model
     public function estaInternado(): bool
     {
         return $this->fecha_alta === null;
+    }
+
+    // Avisos para el personal, calculados con los datos del momento:
+    // fiebre o temperatura baja en el último control, control atrasado
+    // (más de 6 horas, son 4 por día) y medicación en su último día.
+    public function getAlertasAttribute(): array
+    {
+        if (! $this->estaInternado()) {
+            return [];
+        }
+
+        $alertas = [];
+        $control = $this->ultimoControl;
+
+        if ($control && $control->temperatura >= 38) {
+            $alertas[] = 'Fiebre: '.$this->grados($control->temperatura);
+        }
+
+        if ($control && $control->temperatura < 36) {
+            $alertas[] = 'Temperatura baja: '.$this->grados($control->temperatura);
+        }
+
+        $ultimo = $control?->fecha ?? $this->fecha_ingreso;
+        if ($ultimo->lessThan(now()->subHours(6))) {
+            $alertas[] = 'Control de temperatura pendiente';
+        }
+
+        foreach ($this->medicaciones as $medicacion) {
+            if ($medicacion->estaActiva() && $medicacion->fin()?->lessThan(now()->addDay())) {
+                $alertas[] = "Último día de {$medicacion->nombre}";
+            }
+        }
+
+        return $alertas;
+    }
+
+    private function grados(float $temperatura): string
+    {
+        return number_format($temperatura, 1, ',', '').' °C';
     }
 }
