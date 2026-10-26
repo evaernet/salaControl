@@ -21,8 +21,17 @@ class CamaController extends Controller
     }
 
     // Solo se cambia el estado: libre, en limpieza o fuera de servicio.
+    // Lo puede hacer cualquier rol (enfermería suele avisar que la cama ya se limpió).
     public function update(Request $request, Cama $cama)
     {
+        if (! $request->user()->puedeVerSala($cama->sala)) {
+            abort(403, 'No tenés acceso a esta sala.');
+        }
+
+        if ($cama->estaOcupada()) {
+            abort(422, 'La cama tiene un paciente internado.');
+        }
+
         $datos = $request->validate([
             'estado' => ['required', Rule::in(Cama::ESTADOS)],
         ], [
@@ -37,6 +46,10 @@ class CamaController extends Controller
 
     public function destroy(Cama $cama)
     {
+        if ($cama->estaOcupada()) {
+            abort(422, 'No se puede quitar una cama con un paciente internado.');
+        }
+
         $cama->delete();
 
         return response()->noContent();

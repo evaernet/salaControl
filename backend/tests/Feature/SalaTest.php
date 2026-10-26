@@ -57,7 +57,6 @@ class SalaTest extends TestCase
             $this->postJson('/api/salas', ['nombre' => 'Otra'])->assertForbidden();
             $this->deleteJson("/api/salas/{$sala->id}")->assertForbidden();
             $this->postJson("/api/salas/{$sala->id}/camas")->assertForbidden();
-            $this->putJson("/api/camas/{$cama->id}", ['estado' => 'limpieza'])->assertForbidden();
             $this->deleteJson("/api/camas/{$cama->id}")->assertForbidden();
         }
     }

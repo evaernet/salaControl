@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CamaController;
+use App\Http\Controllers\Api\PacienteController;
 use App\Http\Controllers\Api\SalaController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,17 @@ Route::middleware('auth:sanctum')->group(function () {
     // Cualquier usuario puede ver las salas y sus camas.
     Route::get('/salas', [SalaController::class, 'index']);
     Route::get('/salas/{sala}', [SalaController::class, 'show']);
+    Route::get('/pacientes/{paciente}', [PacienteController::class, 'show']);
+
+    // Cualquier rol puede cambiar el estado de una cama de su sala.
+    Route::put('/camas/{cama}', [CamaController::class, 'update']);
+
+    // Internar, cambiar de cama y dar el alta: solo el médico.
+    Route::middleware('role:medico')->group(function () {
+        Route::post('/pacientes', [PacienteController::class, 'store']);
+        Route::post('/pacientes/{paciente}/cambiar-cama', [PacienteController::class, 'cambiarCama']);
+        Route::post('/pacientes/{paciente}/alta', [PacienteController::class, 'alta']);
+    });
 
     // Lo que sigue es solo para el administrador. Médico y enfermero reciben 403.
     Route::middleware('role:administrador')->group(function () {
@@ -25,7 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/salas/{sala}', [SalaController::class, 'destroy']);
 
         Route::post('/salas/{sala}/camas', [CamaController::class, 'store']);
-        Route::put('/camas/{cama}', [CamaController::class, 'update']);
         Route::delete('/camas/{cama}', [CamaController::class, 'destroy']);
     });
 });

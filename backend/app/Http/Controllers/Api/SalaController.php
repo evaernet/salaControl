@@ -12,7 +12,7 @@ class SalaController extends Controller
     // Médico y enfermero con sala asignada reciben solo la suya.
     public function index(Request $request)
     {
-        $salas = Sala::with(['camas' => fn ($query) => $query->orderBy('numero')])
+        $salas = Sala::with(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente')])
             ->withCount('camas')
             ->orderBy('nombre')
             ->get();
@@ -26,7 +26,7 @@ class SalaController extends Controller
             abort(403, 'No tenés acceso a esta sala.');
         }
 
-        return $sala->load(['camas' => fn ($query) => $query->orderBy('numero')]);
+        return $sala->load(['camas' => fn ($query) => $query->orderBy('numero')->with('paciente')]);
     }
 
     // Crea la sala y, si se indica, sus camas numeradas del 1 en adelante.
@@ -53,9 +53,13 @@ class SalaController extends Controller
         return response()->json($sala->load('camas'), 201);
     }
 
-    // Borra la sala junto con sus camas.
+    // Borra la sala junto con sus camas, si no hay nadie internado.
     public function destroy(Sala $sala)
     {
+        if ($sala->camas->contains(fn ($cama) => $cama->estaOcupada())) {
+            abort(422, 'No se puede borrar una sala con pacientes internados.');
+        }
+
         $sala->delete();
 
         return response()->noContent();
