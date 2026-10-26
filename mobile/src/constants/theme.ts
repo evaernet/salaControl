@@ -14,6 +14,10 @@ export const colors = {
   line: '#E1E9F1',
   success: '#2E9E6B',
   danger: '#D14343',
+  // Tipos de aislamiento
+  contacto: '#8E5BB5',
+  gotitas: '#1F9AA8',
+  aereo: '#E07B39',
   dangerSoft: '#FBE9E9',
   white: '#FFFFFF',
 };

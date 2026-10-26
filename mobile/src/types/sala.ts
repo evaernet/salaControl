@@ -1,4 +1,6 @@
-// "Ocupada" todavía no existe: va a salir de los pacientes.
+import type { Paciente } from './paciente';
+
+// Una cama está ocupada cuando tiene paciente; el estado es para las que no lo tienen.
 export type EstadoCama = 'libre' | 'limpieza' | 'fuera_de_servicio';
 
 export interface Cama {
@@ -6,6 +8,7 @@ export interface Cama {
   sala_id: number;
   numero: number;
   estado: EstadoCama;
+  paciente?: Paciente | null;
 }
 
 export interface Sala {
