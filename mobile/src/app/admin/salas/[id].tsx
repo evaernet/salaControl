@@ -19,6 +19,8 @@ export default function SalaScreen() {
   const router = useRouter();
   const [sala, setSala] = useState<Sala | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Mientras espera a la API no se puede tocar otra cosa (evita, por ejemplo, agregar dos camas con un doble toque).
+  const [ocupado, setOcupado] = useState(false);
 
   const cargar = useCallback(() => {
     salaService
@@ -31,12 +33,16 @@ export default function SalaScreen() {
 
   // Todas las acciones hacen lo mismo: llamar a la API y recargar la sala.
   async function hacer(accion: () => Promise<unknown>) {
+    if (ocupado) return;
     setError(null);
+    setOcupado(true);
     try {
       await accion();
       cargar();
     } catch (e) {
       setError(parseApiError(e).message);
+    } finally {
+      setOcupado(false);
     }
   }
 
@@ -82,7 +88,7 @@ export default function SalaScreen() {
         <View key={cama.id} style={styles.cama}>
           <View style={styles.camaHeader}>
             <Text style={styles.camaTitle}>Cama {cama.numero}</Text>
-            <Pressable onPress={() => quitarCama(cama)} hitSlop={10} accessibilityLabel={`Quitar cama ${cama.numero}`}>
+            <Pressable onPress={() => quitarCama(cama)} disabled={ocupado} hitSlop={10} accessibilityLabel={`Quitar cama ${cama.numero}`}>
               <Ionicons name="trash-outline" size={20} color={colors.muted} />
             </Pressable>
           </View>
@@ -92,6 +98,7 @@ export default function SalaScreen() {
                 key={estado}
                 estado={estado}
                 elegido={cama.estado === estado}
+                disabled={ocupado}
                 onPress={() => hacer(() => salaService.cambiarEstado(cama.id, estado))}
               />
             ))}
@@ -99,18 +106,31 @@ export default function SalaScreen() {
         </View>
       ))}
 
-      <Button title="Agregar cama" icon="add" onPress={() => hacer(() => salaService.agregarCama(sala.id))} />
+      <Button
+        title="Agregar cama"
+        icon="add"
+        loading={ocupado}
+        onPress={() => hacer(() => salaService.agregarCama(sala.id))}
+      />
       <Button title="Eliminar sala" variant="danger" icon="trash-outline" onPress={eliminarSala} />
     </Screen>
   );
 }
 
-function EstadoBoton({ estado, elegido, onPress }: { estado: EstadoCama; elegido: boolean; onPress: () => void }) {
+interface EstadoBotonProps {
+  estado: EstadoCama;
+  elegido: boolean;
+  disabled: boolean;
+  onPress: () => void;
+}
+
+function EstadoBoton({ estado, elegido, disabled, onPress }: EstadoBotonProps) {
   const { label, color } = ESTADOS_CAMA[estado];
 
   return (
     <Pressable
       onPress={onPress}
+      disabled={disabled || elegido}
       accessibilityRole="radio"
       accessibilityState={{ selected: elegido }}
       style={[styles.estado, { borderColor: color }, elegido && { backgroundColor: color }]}
