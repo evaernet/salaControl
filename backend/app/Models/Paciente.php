@@ -17,8 +17,9 @@ class Paciente extends Model
         'cama_id' => 'integer',
         'fecha_nacimiento' => 'date:Y-m-d',
         'peso' => 'float',
-        'fecha_ingreso' => 'datetime',
-        'fecha_alta' => 'datetime',
+        // Sin zona horaria: la app las muestra tal cual (hora de Argentina).
+        'fecha_ingreso' => 'datetime:Y-m-d H:i',
+        'fecha_alta' => 'datetime:Y-m-d H:i',
     ];
 
     public function cama()

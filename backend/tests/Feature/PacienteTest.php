@@ -33,6 +33,7 @@ class PacienteTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('nombre', 'Tomás')
             ->assertJsonPath('fecha_nacimiento', '2022-03-10')
+            ->assertJsonPath('fecha_ingreso', now()->format('Y-m-d H:i'))
             ->assertJsonPath('cama.numero', 1)
             ->assertJsonPath('cama.sala.nombre', 'Aislamiento');
 
