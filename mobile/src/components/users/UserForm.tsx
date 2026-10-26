@@ -4,11 +4,12 @@ import { StyleSheet, Switch, Text, View } from "react-native";
 import { parseApiError } from "@/api/errors";
 import { Button } from "@/components/ui/Button";
 import { ErrorBanner } from "@/components/ui/ErrorBanner";
+import { Opciones } from "@/components/ui/Opciones";
 import { TextField } from "@/components/ui/TextField";
+import { ROLES, ROLES_LISTA } from "@/constants/roles";
 import { colors, radius } from "@/constants/theme";
 import type { Rol } from "@/types/user";
 
-import { RolePicker } from "./RolePicker";
 import { SalaPicker } from "./SalaPicker";
 
 export interface UserFormValues {
@@ -153,8 +154,10 @@ export function UserForm({
         textContentType="newPassword"
       />
 
-      <RolePicker
-        value={values.rol}
+      <Opciones
+        label="Rol"
+        opciones={ROLES_LISTA.map((rol) => ({ valor: rol, texto: ROLES[rol].label }))}
+        valor={values.rol}
         onChange={(rol) => set("rol", rol)}
         disabled={esUsuarioActual}
         error={errores.rol}
