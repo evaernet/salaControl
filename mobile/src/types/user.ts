@@ -9,6 +9,9 @@ export interface User {
   email: string;
   rol: Rol;
   activo: boolean;
+  // Sala asignada. null = ve todas las salas.
+  sala_id: number | null;
+  sala: string | null;
   created_at: string | null;
   updated_at: string | null;
 }
@@ -21,6 +24,7 @@ export interface CreateUserPayload {
   password: string;
   rol: Rol;
   activo?: boolean;
+  sala_id?: number | null;
 }
 
 // Datos para PUT /api/users/{id}. Contraseña vacía = no se cambia.

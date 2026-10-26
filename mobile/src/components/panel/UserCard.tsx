@@ -19,6 +19,7 @@ export function UserCard({ user }: { user: User }) {
         <Text style={styles.email} numberOfLines={1}>
           {user.email}
         </Text>
+        {user.sala ? <Text style={styles.email}>Sala {user.sala}</Text> : null}
         <RoleBadge rol={user.rol} />
       </View>
     </View>

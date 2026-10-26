@@ -14,6 +14,7 @@ export default function CreateUserScreen() {
       email: values.email,
       password: values.password,
       rol: values.rol,
+      sala_id: values.sala_id,
     });
     router.dismissTo('/admin/users');
   }

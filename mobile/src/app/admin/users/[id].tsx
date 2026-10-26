@@ -45,6 +45,7 @@ export default function EditUserScreen() {
       email: values.email,
       rol: values.rol,
       activo: values.activo,
+      sala_id: values.sala_id,
     };
     if (values.password) {
       payload.password = values.password;
@@ -68,6 +69,7 @@ export default function EditUserScreen() {
           password: '',
           rol: editado.rol,
           activo: editado.activo,
+          sala_id: editado.sala_id,
         }}
         submitLabel="Guardar cambios"
         onSubmit={guardar}

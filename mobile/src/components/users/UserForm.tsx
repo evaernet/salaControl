@@ -9,6 +9,7 @@ import { colors, radius } from "@/constants/theme";
 import type { Rol } from "@/types/user";
 
 import { RolePicker } from "./RolePicker";
+import { SalaPicker } from "./SalaPicker";
 
 export interface UserFormValues {
   nombre: string;
@@ -17,6 +18,7 @@ export interface UserFormValues {
   password: string;
   rol: Rol;
   activo: boolean;
+  sala_id: number | null;
 }
 
 interface UserFormProps {
@@ -62,6 +64,7 @@ export function UserForm({
     password: "",
     rol: "medico",
     activo: true,
+    sala_id: null,
     ...initialValues,
   });
   const [errores, setErrores] = useState<Errores>({});
@@ -87,7 +90,11 @@ export function UserForm({
     setMensaje(null);
     setGuardando(true);
     try {
-      await onSubmit({ ...values, email: values.email.trim() });
+      await onSubmit({
+        ...values,
+        email: values.email.trim(),
+        sala_id: values.rol === "administrador" ? null : values.sala_id,
+      });
     } catch (error) {
       const apiError = parseApiError(error);
       const hayErroresDeCampo = Object.keys(apiError.fieldErrors).length > 0;
@@ -152,6 +159,15 @@ export function UserForm({
         disabled={esUsuarioActual}
         error={errores.rol}
       />
+
+      {/* El administrador ve todas las salas, así que no se le asigna una. */}
+      {values.rol !== "administrador" ? (
+        <SalaPicker
+          value={values.sala_id}
+          onChange={(salaId) => set("sala_id", salaId)}
+          error={errores.sala_id}
+        />
+      ) : null}
 
       {mode === "edit" ? (
         <View style={styles.switchRow}>

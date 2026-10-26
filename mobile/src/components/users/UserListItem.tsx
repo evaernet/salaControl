@@ -19,6 +19,9 @@ export function UserListItem({ user, onPress }: { user: User; onPress: () => voi
         <Text style={styles.email} numberOfLines={1}>
           {user.email}
         </Text>
+        <Text style={styles.email} numberOfLines={1}>
+          {user.sala ? `Sala ${user.sala}` : 'Todas las salas'}
+        </Text>
         <View style={styles.badges}>
           <RoleBadge rol={user.rol} />
           {!user.activo ? <InactiveBadge /> : null}
