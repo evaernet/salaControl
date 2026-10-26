@@ -16,6 +16,7 @@ class StoreUserRequest extends UserRequest
             'password' => ['required', 'string', 'min:8'],
             'rol' => ['required', Rule::enum(Rol::class)],
             'activo' => ['sometimes', 'boolean'],
+            'sala_id' => ['nullable', 'integer', 'exists:salas,id'],
         ];
     }
 }

@@ -21,6 +21,7 @@ class UpdateUserRequest extends UserRequest
             'password' => ['nullable', 'string', 'min:8'],
             'rol' => ['sometimes', 'required', Rule::enum(Rol::class)],
             'activo' => ['sometimes', 'boolean'],
+            'sala_id' => ['nullable', 'integer', 'exists:salas,id'],
         ];
     }
 

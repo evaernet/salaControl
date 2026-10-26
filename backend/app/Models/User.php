@@ -13,7 +13,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasUuids;
 
-    protected $fillable = ['nombre', 'apellido', 'email', 'password', 'rol', 'activo'];
+    protected $fillable = ['nombre', 'apellido', 'email', 'password', 'rol', 'activo', 'sala_id'];
 
     protected $hidden = ['password', 'remember_token'];
 
@@ -25,12 +25,24 @@ class User extends Authenticatable
             'password' => 'hashed',
             'rol' => Rol::class,
             'activo' => 'boolean',
+            'sala_id' => 'integer',
         ];
+    }
+
+    public function sala()
+    {
+        return $this->belongsTo(Sala::class);
     }
 
     public function esAdministrador(): bool
     {
         return $this->rol === Rol::Administrador;
+    }
+
+    // El administrador y quien no tiene sala asignada ven todas; el resto, solo la suya.
+    public function puedeVerSala(Sala $sala): bool
+    {
+        return $this->esAdministrador() || $this->sala_id === null || $this->sala_id === $sala->id;
     }
 
     // Borra todos los tokens: el usuario tiene que volver a iniciar sesión.

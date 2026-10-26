@@ -29,6 +29,7 @@ abstract class UserRequest extends FormRequest
             'rol.required' => 'Elegí un rol.',
             'rol.enum' => 'El rol debe ser administrador, médico o enfermero.',
             'activo.boolean' => 'El estado debe ser activo o inactivo.',
+            'sala_id.exists' => 'La sala elegida no existe.',
         ];
     }
 

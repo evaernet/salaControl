@@ -9,16 +9,23 @@ use Illuminate\Http\Request;
 class SalaController extends Controller
 {
     // Cada sala viene con sus camas, así el tablero se arma con un solo pedido.
-    public function index()
+    // Médico y enfermero con sala asignada reciben solo la suya.
+    public function index(Request $request)
     {
-        return Sala::with(['camas' => fn ($query) => $query->orderBy('numero')])
+        $salas = Sala::with(['camas' => fn ($query) => $query->orderBy('numero')])
             ->withCount('camas')
             ->orderBy('nombre')
             ->get();
+
+        return $salas->filter(fn (Sala $sala) => $request->user()->puedeVerSala($sala))->values();
     }
 
-    public function show(Sala $sala)
+    public function show(Request $request, Sala $sala)
     {
+        if (! $request->user()->puedeVerSala($sala)) {
+            abort(403, 'No tenés acceso a esta sala.');
+        }
+
         return $sala->load(['camas' => fn ($query) => $query->orderBy('numero')]);
     }
 
@@ -43,7 +50,7 @@ class SalaController extends Controller
             $sala->camas()->create(['numero' => $numero]);
         }
 
-        return response()->json($this->show($sala), 201);
+        return response()->json($sala->load('camas'), 201);
     }
 
     // Borra la sala junto con sus camas.

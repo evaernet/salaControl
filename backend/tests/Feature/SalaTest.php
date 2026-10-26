@@ -99,4 +99,58 @@ class SalaTest extends TestCase
         $this->assertDatabaseCount('salas', 0);
         $this->assertDatabaseCount('camas', 0);
     }
+
+    public function test_medico_con_sala_asignada_ve_solo_su_sala(): void
+    {
+        $aislamiento = Sala::create(['nombre' => 'Aislamiento']);
+        $clinica = Sala::create(['nombre' => 'Clínica']);
+        Sanctum::actingAs(User::factory()->medico()->create(['sala_id' => $aislamiento->id]));
+
+        $this->getJson('/api/salas')
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonPath('0.nombre', 'Aislamiento');
+
+        $this->getJson("/api/salas/{$aislamiento->id}")->assertOk();
+        $this->getJson("/api/salas/{$clinica->id}")->assertForbidden();
+    }
+
+    public function test_sin_sala_asignada_y_el_administrador_ven_todas(): void
+    {
+        $sala = Sala::create(['nombre' => 'Aislamiento']);
+        Sala::create(['nombre' => 'Clínica']);
+
+        Sanctum::actingAs(User::factory()->enfermero()->create());
+        $this->getJson('/api/salas')->assertOk()->assertJsonCount(2);
+
+        Sanctum::actingAs(User::factory()->administrador()->create(['sala_id' => $sala->id]));
+        $this->getJson('/api/salas')->assertOk()->assertJsonCount(2);
+    }
+
+    public function test_administrador_asigna_una_sala_a_un_usuario(): void
+    {
+        $sala = Sala::create(['nombre' => 'Aislamiento']);
+        $medico = User::factory()->medico()->create();
+        Sanctum::actingAs(User::factory()->administrador()->create());
+
+        $this->putJson("/api/users/{$medico->id}", ['sala_id' => $sala->id])
+            ->assertOk()
+            ->assertJsonPath('sala_id', $sala->id)
+            ->assertJsonPath('sala', 'Aislamiento');
+
+        $this->putJson("/api/users/{$medico->id}", ['sala_id' => 999])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.sala_id.0', 'La sala elegida no existe.');
+    }
+
+    public function test_al_borrar_la_sala_el_usuario_queda_sin_sala(): void
+    {
+        $sala = Sala::create(['nombre' => 'Aislamiento']);
+        $medico = User::factory()->medico()->create(['sala_id' => $sala->id]);
+        Sanctum::actingAs(User::factory()->administrador()->create());
+
+        $this->deleteJson("/api/salas/{$sala->id}")->assertNoContent();
+
+        $this->assertNull($medico->fresh()->sala_id);
+    }
 }
