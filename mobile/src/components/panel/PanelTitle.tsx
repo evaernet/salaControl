@@ -1,21 +1,62 @@
-import { StyleSheet, Text } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/auth/AuthContext';
+import { ROLES } from '@/constants/roles';
 import { colors } from '@/constants/theme';
 
-// Va dentro de la franja azul de arriba (prop header de Screen).
-export function PanelTitle({ title }: { title: string }) {
+// Va dentro de la franja azul de arriba (prop header de Screen):
+// saludo, rol y sala del usuario, y el botón para salir arriba a la derecha.
+export function PanelTitle() {
+  const { user, signOut } = useAuth();
+  const insets = useSafeAreaInsets();
+  const [saliendo, setSaliendo] = useState(false);
+
+  if (!user) return null;
+
+  let lugar = user.sala ?? 'Todas las salas';
+  if (user.rol === 'administrador') lugar = 'Administración';
+
+  async function salir() {
+    setSaliendo(true);
+    await signOut();
+  }
+
   return (
     <>
+      <Pressable
+        onPress={salir}
+        disabled={saliendo}
+        accessibilityRole="button"
+        accessibilityLabel="Cerrar sesión"
+        hitSlop={12}
+        style={[styles.salir, { top: insets.top + 12 }]}
+      >
+        {saliendo ? (
+          <ActivityIndicator color={colors.white} />
+        ) : (
+          <Ionicons name="log-out-outline" size={26} color={colors.white} />
+        )}
+      </Pressable>
+
       <Text style={styles.app}>SalaControl</Text>
       <Text style={styles.title} accessibilityRole="header">
-        {title}
+        Hola, {user.nombre}
       </Text>
-      <Text style={styles.subtitle}>Sala de Aislamiento · Hospital Pediátrico</Text>
+      <Text style={styles.subtitle}>
+        {ROLES[user.rol].label} · {lugar}
+      </Text>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  salir: {
+    position: 'absolute',
+    right: 16,
+  },
   app: {
     fontSize: 13,
     fontWeight: '700',
@@ -32,7 +73,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     marginTop: 2,
-    fontSize: 13,
+    fontSize: 14,
     textAlign: 'center',
     color: colors.brandSoft,
   },

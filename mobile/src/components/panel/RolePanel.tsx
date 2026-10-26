@@ -1,21 +1,13 @@
-import { useAuth } from '@/auth/AuthContext';
 import { TableroCamas } from '@/components/camas/TableroCamas';
 import { Screen } from '@/components/ui/Screen';
 
-import { LogoutButton } from './LogoutButton';
 import { PanelTitle } from './PanelTitle';
-import { UserCard } from './UserCard';
 
-// Pantalla principal del médico y del enfermero: quién ingresó y el tablero de camas.
-export function RolePanel({ title }: { title: string }) {
-  const { user } = useAuth();
-  if (!user) return null;
-
+// Pantalla principal del médico y del enfermero: el tablero de camas de su sala.
+export function RolePanel() {
   return (
-    <Screen header={<PanelTitle title={title} />}>
-      <UserCard user={user} />
+    <Screen header={<PanelTitle />}>
       <TableroCamas />
-      <LogoutButton />
     </Screen>
   );
 }

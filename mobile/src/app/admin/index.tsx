@@ -3,9 +3,7 @@ import { useCallback, useState } from 'react';
 
 import { useAuth } from '@/auth/AuthContext';
 import { ActionCard } from '@/components/panel/ActionCard';
-import { LogoutButton } from '@/components/panel/LogoutButton';
 import { PanelTitle } from '@/components/panel/PanelTitle';
-import { UserCard } from '@/components/panel/UserCard';
 import { Screen } from '@/components/ui/Screen';
 import { userService } from '@/services/userService';
 
@@ -32,9 +30,7 @@ export default function AdminHomeScreen() {
   }
 
   return (
-    <Screen header={<PanelTitle title="Panel de Administrador" />}>
-      <UserCard user={user} />
-
+    <Screen header={<PanelTitle />}>
       <ActionCard
         icon="people-outline"
         title="Usuarios"
@@ -53,8 +49,6 @@ export default function AdminHomeScreen() {
         description="Crear salas y manejar sus camas"
         onPress={() => router.push('/admin/salas')}
       />
-
-      <LogoutButton />
     </Screen>
   );
 }
