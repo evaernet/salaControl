@@ -5,7 +5,15 @@ function aFecha(texto: string): Date {
   return new Date(anio, mes - 1, dia);
 }
 
-const UN_DIA = 24 * 60 * 60 * 1000;
+// "2026-10-26 15:30" -> fecha con hora.
+export function aFechaHora(texto: string): Date {
+  const fecha = aFecha(texto);
+  const [hora, minutos] = (texto.slice(11, 16) || '00:00').split(':').map(Number);
+  fecha.setHours(hora, minutos);
+  return fecha;
+}
+
+export const UN_DIA = 24 * 60 * 60 * 1000;
 
 // Edad para pediatría: días si es recién nacido, meses hasta los 2 años, después años.
 export function edad(fechaNacimiento: string): string {

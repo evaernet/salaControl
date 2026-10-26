@@ -9,6 +9,7 @@ import { colors, radius, shadow } from '@/constants/theme';
 import { salaService } from '@/services/salaService';
 import type { Cama } from '@/types/sala';
 import { diaDeInternacion, edad } from '@/utils/fechas';
+import { grados } from '@/utils/numeros';
 
 interface CamaCardProps {
   cama: Cama;
@@ -44,10 +45,19 @@ export function CamaCard({ cama, sala, onCambio }: CamaCardProps) {
         <Text style={styles.diagnostico} numberOfLines={1}>
           {paciente.diagnostico}
         </Text>
+        {paciente.alertas.length > 0 ? (
+          <Text style={styles.alerta} numberOfLines={1}>
+            ⚠ {paciente.alertas[0]}
+            {paciente.alertas.length > 1 ? ` (+${paciente.alertas.length - 1})` : ''}
+          </Text>
+        ) : null}
         <View style={styles.etiquetas}>
           {paciente.aislamiento !== 'ninguno' ? <Etiqueta texto={aislamiento.label} color={aislamiento.color} /> : null}
           {paciente.alergias ? <Etiqueta texto="Alergias" color={colors.danger} /> : null}
-          <Text style={styles.dia}>Día {diaDeInternacion(paciente.fecha_ingreso)}</Text>
+          <Text style={styles.dia}>
+            Día {diaDeInternacion(paciente.fecha_ingreso)}
+            {paciente.ultimo_control ? ` · Últ. ${grados(paciente.ultimo_control.temperatura)}` : ''}
+          </Text>
         </View>
       </View>
       <Ionicons name="chevron-forward" size={20} color={colors.brand} />
@@ -148,6 +158,11 @@ const styles = StyleSheet.create({
   diagnostico: {
     fontSize: 14,
     color: colors.textSoft,
+  },
+  alerta: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.danger,
   },
   etiquetas: {
     flexDirection: 'row',

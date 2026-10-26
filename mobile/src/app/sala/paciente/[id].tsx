@@ -4,6 +4,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { parseApiError } from '@/api/errors';
 import { useAuth } from '@/auth/AuthContext';
+import { Alertas } from '@/components/pacientes/Alertas';
+import { Temperatura } from '@/components/pacientes/Temperatura';
 import { Button } from '@/components/ui/Button';
 import { ErrorBanner } from '@/components/ui/ErrorBanner';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
@@ -117,6 +119,8 @@ export default function PacienteScreen() {
         </Text>
       </View>
 
+      <Alertas alertas={actual.alertas} />
+
       {/* Lo que hay que saber antes de entrar a la habitación */}
       <View style={[styles.aviso, { backgroundColor: actual.alergias ? colors.dangerSoft : colors.surface }]}>
         <Text style={[styles.avisoTitulo, { color: actual.alergias ? colors.danger : colors.muted }]}>
@@ -129,6 +133,13 @@ export default function PacienteScreen() {
           <Text style={styles.avisoTexto}>{aislamiento.cuidados}</Text>
         </View>
       ) : null}
+
+      <Temperatura
+        pacienteId={actual.id}
+        controles={actual.controles ?? []}
+        puedeRegistrar={!!internado}
+        onCambio={cargar}
+      />
 
       <View style={styles.card}>
         <Dato titulo="Diagnóstico" valor={actual.diagnostico} />
