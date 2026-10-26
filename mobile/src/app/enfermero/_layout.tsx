@@ -4,7 +4,7 @@ import { RoleGuard } from '@/components/auth/RoleGuard';
 
 export default function EnfermeroLayout() {
   return (
-    <RoleGuard rol="enfermero">
+    <RoleGuard roles={['enfermero']}>
       <Stack screenOptions={{ headerShown: false }} />
     </RoleGuard>
   );

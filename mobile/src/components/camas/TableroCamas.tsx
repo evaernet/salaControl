@@ -44,7 +44,7 @@ export function TableroCamas() {
             {salas.length > 1 ? <Text style={styles.salaNombre}>{sala.nombre}</Text> : null}
             <Resumen camas={camas} />
             {camas.map((cama) => (
-              <CamaCard key={cama.id} cama={cama} onCambio={cargar} />
+              <CamaCard key={cama.id} cama={cama} sala={sala.nombre} onCambio={cargar} />
             ))}
           </View>
         );

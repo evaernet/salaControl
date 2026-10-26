@@ -7,13 +7,13 @@ import { homeDelRol } from '@/constants/roles';
 import type { Rol } from '@/types/user';
 
 interface RoleGuardProps {
-  rol: Rol;
+  roles: Rol[];
   children: ReactNode;
 }
 
 // Sin sesión manda al login; con otro rol, a la pantalla de ese rol.
 // Esto es solo navegación: los permisos de verdad los controla la API.
-export function RoleGuard({ rol, children }: RoleGuardProps) {
+export function RoleGuard({ roles, children }: RoleGuardProps) {
   const { status, user } = useAuth();
 
   if (status === 'loading') {
@@ -24,7 +24,7 @@ export function RoleGuard({ rol, children }: RoleGuardProps) {
     return <Redirect href="/login" />;
   }
 
-  if (user.rol !== rol) {
+  if (!roles.includes(user.rol)) {
     return <Redirect href={homeDelRol(user.rol)} />;
   }
 

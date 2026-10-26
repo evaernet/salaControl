@@ -1,6 +1,8 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useAuth } from '@/auth/AuthContext';
 import { AISLAMIENTOS, ESTADOS_CAMA } from '@/constants/camas';
 import { colors, radius, shadow } from '@/constants/theme';
 import { salaService } from '@/services/salaService';
@@ -9,15 +11,16 @@ import { diaDeInternacion, edad } from '@/utils/fechas';
 
 interface CamaCardProps {
   cama: Cama;
+  sala: string;
   // Se llama después de cambiar algo, para recargar el tablero.
   onCambio: () => void;
 }
 
-export function CamaCard({ cama, onCambio }: CamaCardProps) {
+export function CamaCard({ cama, sala, onCambio }: CamaCardProps) {
   const paciente = cama.paciente;
 
   if (!paciente) {
-    return <CamaSinPaciente cama={cama} onCambio={onCambio} />;
+    return <CamaSinPaciente cama={cama} sala={sala} onCambio={onCambio} />;
   }
 
   const aislamiento = AISLAMIENTOS[paciente.aislamiento];
@@ -46,7 +49,9 @@ export function CamaCard({ cama, onCambio }: CamaCardProps) {
 }
 
 // Cama libre, en limpieza o fuera de servicio.
-function CamaSinPaciente({ cama, onCambio }: CamaCardProps) {
+function CamaSinPaciente({ cama, sala, onCambio }: CamaCardProps) {
+  const router = useRouter();
+  const { user } = useAuth();
   const [guardando, setGuardando] = useState(false);
   const { label, color } = ESTADOS_CAMA[cama.estado];
 
@@ -69,6 +74,15 @@ function CamaSinPaciente({ cama, onCambio }: CamaCardProps) {
       {cama.estado !== 'libre' ? (
         <Pressable onPress={marcarLibre} disabled={guardando} style={styles.accion} hitSlop={6}>
           <Text style={styles.accionTexto}>{guardando ? 'Guardando…' : 'Marcar libre'}</Text>
+        </Pressable>
+      ) : null}
+      {cama.estado === 'libre' && user?.rol === 'medico' ? (
+        <Pressable
+          onPress={() => router.push({ pathname: '/sala/internar', params: { cama: cama.id, numero: cama.numero, sala } })}
+          style={[styles.accion, styles.accionPrincipal]}
+          hitSlop={6}
+        >
+          <Text style={[styles.accionTexto, styles.accionPrincipalTexto]}>+ Internar</Text>
         </Pressable>
       ) : null}
     </View>
@@ -166,6 +180,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
+  },
+  accionPrincipal: {
+    backgroundColor: colors.brand,
+  },
+  accionPrincipalTexto: {
+    color: colors.white,
   },
   accionTexto: {
     fontSize: 13,
