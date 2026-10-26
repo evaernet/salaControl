@@ -10,7 +10,7 @@ class Paciente extends Model
 
     protected $fillable = [
         'cama_id', 'nombre', 'apellido', 'fecha_nacimiento', 'peso', 'diagnostico', 'diagnosticos_base',
-        'aislamiento', 'alergias', 'obra_social', 'acompanante', 'acompanante_telefono', 'fecha_ingreso', 'fecha_alta',
+        'aislamiento', 'alergias', 'obra_social', 'acompanante_parentesco', 'acompanante', 'acompanante_telefono', 'fecha_ingreso', 'fecha_alta',
     ];
 
     protected $casts = [

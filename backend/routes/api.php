@@ -22,9 +22,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Cualquier rol puede cambiar el estado de una cama de su sala.
     Route::put('/camas/{cama}', [CamaController::class, 'update']);
 
-    // Internar, cambiar de cama y dar el alta: solo el médico.
+    // Internar, editar, cambiar de cama y dar el alta: solo el médico.
     Route::middleware('role:medico')->group(function () {
         Route::post('/pacientes', [PacienteController::class, 'store']);
+        Route::put('/pacientes/{paciente}', [PacienteController::class, 'update']);
         Route::post('/pacientes/{paciente}/cambiar-cama', [PacienteController::class, 'cambiarCama']);
         Route::post('/pacientes/{paciente}/alta', [PacienteController::class, 'alta']);
     });

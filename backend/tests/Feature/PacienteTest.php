@@ -141,6 +141,26 @@ class PacienteTest extends TestCase
         $this->postJson('/api/pacientes', $this->datos(['cama_id' => $this->cama(2)->id]))->assertForbidden();
     }
 
+    public function test_medico_edita_los_datos_del_paciente(): void
+    {
+        $paciente = $this->internar($this->cama(1));
+        Sanctum::actingAs(User::factory()->medico()->create());
+
+        $this->putJson("/api/pacientes/{$paciente->id}", $this->datos([
+            'peso' => 17.2,
+            'alergias' => null,
+            'acompanante_parentesco' => 'Madre',
+        ]))
+            ->assertOk()
+            ->assertJsonPath('peso', 17.2)
+            ->assertJsonPath('alergias', null)
+            ->assertJsonPath('acompanante_parentesco', 'Madre')
+            ->assertJsonPath('cama.numero', 1);
+
+        Sanctum::actingAs(User::factory()->enfermero()->create());
+        $this->putJson("/api/pacientes/{$paciente->id}", $this->datos())->assertForbidden();
+    }
+
     private function cama(int $numero): Cama
     {
         return $this->sala->camas()->where('numero', $numero)->firstOrFail();
