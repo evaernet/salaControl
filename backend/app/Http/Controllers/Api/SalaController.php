@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 
 class SalaController extends Controller
 {
+    // Cada sala viene con sus camas, así el tablero se arma con un solo pedido.
     public function index()
     {
-        return Sala::withCount('camas')->orderBy('nombre')->get();
+        return Sala::with(['camas' => fn ($query) => $query->orderBy('numero')])
+            ->withCount('camas')
+            ->orderBy('nombre')
+            ->get();
     }
 
     public function show(Sala $sala)

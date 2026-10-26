@@ -48,7 +48,10 @@ class SalaTest extends TestCase
         foreach (['medico', 'enfermero'] as $rol) {
             Sanctum::actingAs(User::factory()->create(['rol' => $rol]));
 
-            $this->getJson('/api/salas')->assertOk()->assertJsonPath('0.camas_count', 1);
+            $this->getJson('/api/salas')
+                ->assertOk()
+                ->assertJsonPath('0.camas_count', 1)
+                ->assertJsonPath('0.camas.0.numero', 1);
             $this->getJson("/api/salas/{$sala->id}")->assertOk()->assertJsonCount(1, 'camas');
 
             $this->postJson('/api/salas', ['nombre' => 'Otra'])->assertForbidden();
