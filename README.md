@@ -91,7 +91,6 @@ Todas las respuestas son JSON. Las rutas protegidas llevan el header `Authorizat
 | POST | `/api/users` | administrador | `201` usuario creado · `422` validación |
 | GET | `/api/users/{id}` | administrador | `200` usuario · `404` |
 | PUT | `/api/users/{id}` | administrador | `200` usuario actualizado · `422` validación |
-| DELETE | `/api/users/{id}` | administrador | `204` baja lógica |
 | GET | `/api/salas` | con sesión | `200` salas con la cantidad de camas |
 | GET | `/api/salas/{id}` | con sesión | `200` sala con sus camas |
 | POST | `/api/salas` | administrador | `201` sala creada (`nombre`, y `camas` opcional para crearlas numeradas) |
@@ -136,9 +135,7 @@ Usuario de ejemplo:
 - **Rol como columna** `users.rol` con tres valores fijos, como en el modelo de datos del TFI, en lugar de una
   tabla `roles`.
 - **IDs UUID** (v7, ordenados por tiempo), como en el diseño de la base.
-- **DELETE es baja lógica** (soft delete): el usuario desaparece del listado y no puede ingresar, pero el registro
-  se conserva. Su email no se puede reutilizar.
-- **El administrador no puede quitarse el rol, desactivarse ni eliminarse a sí mismo**, así nunca queda la app
+- **El administrador no puede quitarse el rol ni desactivarse a sí mismo**, así nunca queda la app
   sin administrador.
 - **Al desactivar a un usuario o cambiarle el rol o la contraseña**, se cierran sus sesiones: tiene que volver a
   ingresar y la app lo lleva a la pantalla de su rol.

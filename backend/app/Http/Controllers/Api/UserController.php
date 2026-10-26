@@ -7,7 +7,6 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use Illuminate\Http\Request;
 
 // ABM de usuarios. Todas las rutas son solo para el administrador (ver routes/api.php).
 class UserController extends Controller
@@ -51,18 +50,5 @@ class UserController extends Controller
         }
 
         return new UserResource($user);
-    }
-
-    // Baja lógica: no se borra de la base, solo deja de aparecer y no puede ingresar.
-    public function destroy(Request $request, User $user)
-    {
-        if ($user->is($request->user())) {
-            abort(422, 'No podés eliminar tu propio usuario.');
-        }
-
-        $user->cerrarSesiones();
-        $user->delete();
-
-        return response()->noContent();
     }
 }

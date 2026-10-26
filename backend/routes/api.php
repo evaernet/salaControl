@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Lo que sigue es solo para el administrador. Médico y enfermero reciben 403.
     Route::middleware('role:administrador')->group(function () {
-        Route::apiResource('users', UserController::class);
+        Route::apiResource('users', UserController::class)->except('destroy');
 
         Route::post('/salas', [SalaController::class, 'store']);
         Route::delete('/salas/{sala}', [SalaController::class, 'destroy']);

@@ -5,14 +5,13 @@ namespace App\Models;
 use App\Enums\Rol;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 // Personal que usa la app. Los usuarios los crea el administrador, no hay registro.
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasUuids, SoftDeletes;
+    use HasApiTokens, HasFactory, HasUuids;
 
     protected $fillable = ['nombre', 'apellido', 'email', 'password', 'rol', 'activo'];
 

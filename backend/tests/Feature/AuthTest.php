@@ -63,15 +63,6 @@ class AuthTest extends TestCase
         $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 
-    public function test_usuario_eliminado_no_puede_ingresar(): void
-    {
-        $user = User::factory()->create(['email' => 'borrado@salacontrol.test', 'password' => 'Secreta123']);
-        $user->delete();
-
-        $this->postJson('/api/login', ['email' => 'borrado@salacontrol.test', 'password' => 'Secreta123'])
-            ->assertUnprocessable();
-    }
-
     public function test_me_requiere_token(): void
     {
         $this->getJson('/api/me')->assertUnauthorized();

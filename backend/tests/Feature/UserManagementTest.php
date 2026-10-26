@@ -39,7 +39,6 @@ class UserManagementTest extends TestCase
             $this->postJson('/api/users', $this->datosValidos())->assertForbidden();
             $this->getJson("/api/users/{$otro->id}")->assertForbidden();
             $this->putJson("/api/users/{$otro->id}", ['rol' => 'administrador'])->assertForbidden();
-            $this->deleteJson("/api/users/{$otro->id}")->assertForbidden();
         }
 
         // Nadie se pudo crear ni modificar a sí mismo como administrador.
@@ -162,29 +161,6 @@ class UserManagementTest extends TestCase
 
         $this->assertTrue($this->admin->fresh()->esAdministrador());
         $this->assertTrue($this->admin->fresh()->activo);
-    }
-
-    public function test_eliminar_es_baja_logica_y_cierra_sesiones(): void
-    {
-        $user = User::factory()->create();
-        $user->createToken('celular');
-
-        Sanctum::actingAs($this->admin);
-
-        $this->deleteJson("/api/users/{$user->id}")->assertNoContent();
-
-        $this->assertSoftDeleted($user);
-        $this->assertSame(0, $user->tokens()->count());
-        $this->getJson("/api/users/{$user->id}")->assertNotFound();
-    }
-
-    public function test_administrador_no_puede_eliminarse(): void
-    {
-        Sanctum::actingAs($this->admin);
-
-        $this->deleteJson("/api/users/{$this->admin->id}")->assertUnprocessable();
-
-        $this->assertNotSoftDeleted($this->admin);
     }
 
     /**
