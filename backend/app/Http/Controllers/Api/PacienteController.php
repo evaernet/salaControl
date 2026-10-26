@@ -11,12 +11,13 @@ use Illuminate\Validation\Rule;
 
 class PacienteController extends Controller
 {
-    // Ficha del paciente con su cama, sala y los últimos controles.
+    // Ficha del paciente con su cama, sala, los últimos controles y la medicación.
     public function show(Request $request, Paciente $paciente)
     {
         $paciente->load([
             'cama.sala',
             'controles' => fn ($query) => $query->limit(20)->with('user:id,nombre,apellido'),
+            'medicaciones',
         ]);
 
         if ($paciente->cama) {

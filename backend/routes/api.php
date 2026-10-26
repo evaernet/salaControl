@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CamaController;
 use App\Http\Controllers\Api\ControlController;
+use App\Http\Controllers\Api\MedicacionController;
 use App\Http\Controllers\Api\PacienteController;
 use App\Http\Controllers\Api\SalaController;
 use App\Http\Controllers\Api\UserController;
@@ -26,12 +27,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Controles: los registran médico y enfermero.
     Route::post('/pacientes/{paciente}/controles', [ControlController::class, 'store'])->middleware('role:medico,enfermero');
 
-    // Internar, editar, cambiar de cama y dar el alta: solo el médico.
+    // Internar, editar, cambiar de cama, dar el alta e indicar medicación: solo el médico.
     Route::middleware('role:medico')->group(function () {
         Route::post('/pacientes', [PacienteController::class, 'store']);
         Route::put('/pacientes/{paciente}', [PacienteController::class, 'update']);
         Route::post('/pacientes/{paciente}/cambiar-cama', [PacienteController::class, 'cambiarCama']);
         Route::post('/pacientes/{paciente}/alta', [PacienteController::class, 'alta']);
+
+        Route::post('/pacientes/{paciente}/medicaciones', [MedicacionController::class, 'store']);
+        Route::post('/medicaciones/{medicacion}/suspender', [MedicacionController::class, 'suspender']);
     });
 
     // Lo que sigue es solo para el administrador. Médico y enfermero reciben 403.

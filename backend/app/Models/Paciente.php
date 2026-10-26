@@ -38,6 +38,12 @@ class Paciente extends Model
         return $this->hasOne(Control::class)->latestOfMany('fecha');
     }
 
+    // Las más nuevas primero.
+    public function medicaciones()
+    {
+        return $this->hasMany(Medicacion::class)->orderByDesc('inicio');
+    }
+
     public function estaInternado(): bool
     {
         return $this->fecha_alta === null;
