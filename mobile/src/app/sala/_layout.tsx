@@ -10,6 +10,7 @@ export default function SalaLayout() {
       <Stack screenOptions={opcionesEncabezado}>
         <Stack.Screen name="internar" options={{ title: 'Internar paciente' }} />
         <Stack.Screen name="paciente/[id]" options={{ title: 'Paciente' }} />
+        <Stack.Screen name="editar" options={{ title: 'Editar paciente' }} />
       </Stack>
     </RoleGuard>
   );

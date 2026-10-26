@@ -1,8 +1,8 @@
 import { api } from '@/api/client';
 import type { Aislamiento, Paciente } from '@/types/paciente';
 
-export interface DatosInternacion {
-  cama_id: number;
+// Lo que se manda al internar o editar (al internar se agrega la cama).
+export interface DatosPaciente {
   nombre: string;
   apellido: string;
   fecha_nacimiento: string;
@@ -12,6 +12,7 @@ export interface DatosInternacion {
   aislamiento: Aislamiento;
   alergias: string;
   obra_social: string;
+  acompanante_parentesco: string | null;
   acompanante: string;
   acompanante_telefono: string;
 }
@@ -22,8 +23,13 @@ export const pacienteService = {
     return data;
   },
 
-  async internar(datos: DatosInternacion): Promise<Paciente> {
-    const { data } = await api.post<Paciente>('/pacientes', datos);
+  async internar(camaId: number, datos: DatosPaciente): Promise<Paciente> {
+    const { data } = await api.post<Paciente>('/pacientes', { ...datos, cama_id: camaId });
+    return data;
+  },
+
+  async editar(id: number, datos: DatosPaciente): Promise<Paciente> {
+    const { data } = await api.put<Paciente>(`/pacientes/${id}`, datos);
     return data;
   },
 

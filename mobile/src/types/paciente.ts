@@ -15,6 +15,7 @@ export interface Paciente {
   aislamiento: Aislamiento;
   alergias: string | null;
   obra_social: string | null;
+  acompanante_parentesco: string | null;
   acompanante: string | null;
   acompanante_telefono: string | null;
   fecha_ingreso: string; // "2026-10-26 15:30"

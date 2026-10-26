@@ -1,5 +1,5 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { parseApiError } from '@/api/errors';
@@ -34,7 +34,8 @@ export default function PacienteScreen() {
       .catch((e) => setError(parseApiError(e).message));
   }, [id]);
 
-  useEffect(cargar, [cargar]);
+  // Se recarga al volver de editar.
+  useFocusEffect(cargar);
 
   if (!paciente) {
     return error ? (
@@ -136,13 +137,19 @@ export default function PacienteScreen() {
         <Dato titulo="Obra social" valor={actual.obra_social} />
         <Dato
           titulo="Acompañante"
-          valor={[actual.acompanante, actual.acompanante_telefono].filter(Boolean).join(' · ') || null}
+          valor={[actual.acompanante_parentesco, actual.acompanante, actual.acompanante_telefono].filter(Boolean).join(' · ') || null}
         />
         <Dato titulo="Ingreso" valor={fechaLegible(actual.fecha_ingreso)} />
       </View>
 
       {internado && esMedico ? (
         <>
+          <Button
+            title="Editar datos"
+            variant="outline"
+            icon="create-outline"
+            onPress={() => router.push({ pathname: '/sala/editar', params: { id: actual.id } })}
+          />
           {eligiendoCama ? (
             <View style={styles.card}>
               <Text style={styles.datoTitulo}>Elegí la cama nueva</Text>
